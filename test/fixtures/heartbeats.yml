@@ -1,0 +1,9 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  serial_number: MyString
+  last_seen_at: 2026-02-25 14:47:53
+
+two:
+  serial_number: MyString
+  last_seen_at: 2026-02-25 14:47:53
