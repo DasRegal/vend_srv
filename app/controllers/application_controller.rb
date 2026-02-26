@@ -9,7 +9,7 @@ class ApplicationController < ActionController::Base
 
   def authenticate_device!
     token = request.headers['X-Device-Token']
-    
+   
     return if token.present? && token == ENV['DEVICE_API_TOKEN']
 
     authenticate_or_request_with_http_basic("Application") do |username, password|

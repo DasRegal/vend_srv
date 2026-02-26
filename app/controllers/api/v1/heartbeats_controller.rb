@@ -1,4 +1,4 @@
-class HeartbeatsController < ApplicationController
+class Api::V1::HeartbeatsController < ApplicationController
   before_action :set_heartbeat, only: %i[ show update destroy ]
 
   # GET /heartbeats

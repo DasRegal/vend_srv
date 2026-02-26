@@ -38,7 +38,24 @@ RailsAdmin.config do |config|
     show
     edit
     delete
-    show_in_app
+
+    show_in_app do
+      visible true
+      controller do
+        proc do
+          # Rails сама соберет путь /api/v1/название_модели/id
+          # format: :json добавит расширение в конец
+          path = main_app.polymorphic_path([:api, :v1, @object], format: :json) rescue nil
+        
+          if path
+            redirect_to path
+          else
+            # Если для модели нет API роута, просто открываем стандартный путь
+            redirect_to main_app.url_for(@object)
+          end
+        end
+      end
+    end
 
     ## With an audit adapter, you can add:
     # history_index
@@ -64,6 +81,7 @@ RailsAdmin.config do |config|
           bindings[:object].heartbeat&.last_seen_at&.strftime("%d.%m %H:%M") || "—"
         end
       end
+
     end
   end
 end
