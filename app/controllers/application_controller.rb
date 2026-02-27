@@ -10,7 +10,11 @@ class ApplicationController < ActionController::Base
   def authenticate_device!
     token = request.headers['X-Device-Token']
    
-    return if token.present? && token == ENV['DEVICE_API_TOKEN']
+    device = Device.find_by(serial_number: params[:id])
+  
+    if device && token.present? && token == device.effective_token
+      return
+    end
 
     authenticate_or_request_with_http_basic("Application") do |username, password|
       username == ENV['ADMIN_USERNAME'] && password == ENV['ADMIN_PASSWORD']

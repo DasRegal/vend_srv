@@ -1,5 +1,6 @@
 class Device < ApplicationRecord
   has_one :heartbeat, primary_key: :serial_number, foreign_key: :serial_number, dependent: :destroy
+
   # После создания устройства в базе, создаем для него Heartbeat
   after_create :create_associated_heartbeat
 
@@ -18,6 +19,10 @@ class Device < ApplicationRecord
     else
       { text: "Не активен", class: "label-danger" }
     end
+  end
+
+  def effective_token
+    use_global_token ? GlobalConfig.instance.token : access_token
   end
 
   private

@@ -32,7 +32,15 @@ RailsAdmin.config do |config|
   config.actions do
     dashboard                     # mandatory
     index                         # mandatory
-    new
+    new do
+      visible do
+        if bindings[:abstract_model].model_name == 'GlobalConfig'
+          GlobalConfig.count == 0
+        else
+          true
+        end
+      end
+    end
     export
     bulk_delete
     show
@@ -64,6 +72,22 @@ RailsAdmin.config do |config|
 
   config.model 'Device' do
     edit do
+      group :security do
+        label "Безопасность и Доступ"
+        field :use_global_token, :enum  do
+          label "Использовать общий токен"
+          enum do
+            { "Общий токен" => true, "Индивидуальный токен" => false }
+          end
+        end
+        field :access_token do
+          label "Индивидуальный токен"
+          help do
+            "Оставьте пустым, если используете общий. <a href='#' onclick='document.getElementById(\"device_access_token\").value = Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b => \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\"[b % 62]).join(\"\"); return false;'>Сгенерировать уникальный</a>".html_safe
+          end
+        end
+      end
+
       group :default do
         label "Основная информация"
         field :serial_number
@@ -166,6 +190,48 @@ RailsAdmin.config do |config|
         end
       end
 
+    end
+  end
+
+  config.model 'GlobalConfig' do
+    label "Глобальные настройки"
+    edit do
+      field :token do
+        label "Общий API Токен"
+        help do
+          # Кнопка генерации через JS
+          "32 символа. <a href='#' onclick='document.getElementById(\"global_config_token\").value = Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b => \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\"[b % 62]).join(\"\"); return false;'>Сгенерировать новый</a>".html_safe
+        end
+      end
+    end
+
+    list do
+      field :token do
+        label "Текущий общий токен"
+        pretty_value do
+          id = "token_#{bindings[:object].id}"
+
+          bindings[:view].content_tag(:span, style: "cursor: pointer; font-family: monospace;",
+            title: "Нажмите, чтобы скопировать",
+            onclick: "navigator.clipboard.writeText('#{value}'); alert('Токен скопирован!');") do
+            "#{value} <i class='fa fa-copy' style='margin-left: 5px; color: #337ab7;'></i>".html_safe
+          end
+        end
+      end
+
+      field :created_at do
+        label "Дата создания"
+        pretty_value do
+          value.strftime("%d.%m.%Y %H:%M")
+        end
+      end
+
+      field :updated_at do
+        label "Последнее изменение"
+        pretty_value do
+          value.strftime("%d.%m.%Y %H:%M")
+        end
+      end
     end
   end
 end
