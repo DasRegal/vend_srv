@@ -49,6 +49,11 @@ class Api::V1::DevicesController < ApplicationController
     
     # Only allow a list of trusted parameters through.
     def device_params
-      params.fetch(:device).permit(:serial_number, :address, :description, :status)
+      params.fetch(:device, {}).permit(
+        :serial_number, :address, :description, :status,
+        :board_name, :hw_rev, :fw_ver, :git_hash,
+        :billbox_sn, :billbox_name, :coinbox_sn, :coinbox_name,
+        :cashless_sn, :cashless_name
+  )
     end
 end
