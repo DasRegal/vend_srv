@@ -172,7 +172,14 @@ RailsAdmin.config do |config|
     end
 
     list do
-      field :serial_number
+      field :serial_number do
+        label "Серийный номер"
+      # Делаем значение ссылкой на страницу просмотра (show) этого объекта
+      pretty_value do
+        path = bindings[:view].show_path(model_name: 'Device', id: bindings[:object].id)
+        bindings[:view].link_to(value, path)
+      end
+      end
       field :address
       # Кастомное поле для статуса
       field :status_display do
