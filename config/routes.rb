@@ -3,7 +3,11 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :devices
+      resources :devices, param: :serial_number do
+        member do
+          get :settings
+        end
+      end
       resources :heartbeats
     end
   end

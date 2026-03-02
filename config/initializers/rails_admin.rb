@@ -96,6 +96,13 @@ RailsAdmin.config do |config|
         field :status do read_only true end
       end
 
+      #field :config, :code_mirror do
+      #  config_option :mode, 'javascript'
+      #end
+      field :config, :jsonb do
+        help "Формат JSON. Например: { \"dispenser\": { \"default_price\": 150 } }"
+      end
+
       group :system_info do
         label "Системная информация"
         active false # Группа будет свернута по умолчанию
@@ -210,6 +217,10 @@ RailsAdmin.config do |config|
           "32 символа. <a href='#' onclick='document.getElementById(\"global_config_token\").value = Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b => \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\"[b % 62]).join(\"\"); return false;'>Сгенерировать новый</a>".html_safe
         end
       end
+      field :config, :jsonb do
+        label "Глобальный конфиг диспенсеров"
+        help "Настройки по умолчанию для всех устройств"
+      end
     end
 
     list do
@@ -223,6 +234,14 @@ RailsAdmin.config do |config|
             onclick: "navigator.clipboard.writeText('#{value}'); alert('Токен скопирован!');") do
             "#{value} <i class='fa fa-copy' style='margin-left: 5px; color: #337ab7;'></i>".html_safe
           end
+        end
+      end
+
+      field :config do
+        label "Конфигурация"
+        pretty_value do
+          # Сокращаем вывод JSON, чтобы таблица не разъезжалась
+          value.to_s.truncate(50)
         end
       end
 

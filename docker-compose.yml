@@ -22,4 +22,9 @@ services:
         DEVICE_API_TOKEN: ${DEVICE_API_TOKEN}
         ADMIN_USERNAME: ${ADMIN_USERNAME}
         ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      logging:
+        driver: "json-file"
+        options:
+          max-size: "10m" # файл не больше 10 мегабайт
+          max-file: "3"   # хранить только 3 последних файла
 

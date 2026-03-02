@@ -1,5 +1,5 @@
 class Api::V1::DevicesController < ApplicationController
-  before_action :set_device, only: %i[ show update destroy ]
+  before_action :set_device, only: %i[ show update destroy settings ]
 
   # GET /devices
   def index
@@ -41,10 +41,16 @@ class Api::V1::DevicesController < ApplicationController
     @device.destroy!
   end
 
+  def settings
+    render json: @device.merged_config
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_device
-      @device = Device.find_by(id: params[:id])
+      @device = Device.find_by!(serial_number: params[:serial_number])
+    rescue ActiveRecord::RecordNotFound
+      render json: { error: "Device not found" }, status: :not_found
     end
     
     # Only allow a list of trusted parameters through.
