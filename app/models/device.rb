@@ -43,26 +43,6 @@ class Device < ApplicationRecord
     final_config
   end
 
-#  def full_config
-#    # Базовые значения, которые ты указал
-#    defaults = {
-#      dispenser: {
-#        default_price: 150,
-#        default_timeout: 7000,
-#        default_twist_time: 0,
-#        items: []
-#      },
-#      cashless: { always_idle: false, vmc_level: 2 },
-#      server: { ip: "95.81.100.8", port: 3000 }
-#    }
-#
-#    global_json = (GlobalConfig.first&.config || {}).to_h.deep_symbolize_keys
-#    device_json = (self.config || {}).to_h.deep_symbolize_keys
-#
-#    # Склеиваем всё вместе
-#    defaults.deep_merge(global_json).deep_merge(device_json)
-#  end
-
   private
 
   def create_associated_heartbeat
