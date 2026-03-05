@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  serial_number: MyString
+  item: 1
+  item_price: 1
+  cash_balance: 1
+  cashless_balance: 1
+  balance: 1
+  is_dispensed: false
+
+two:
+  serial_number: MyString
+  item: 1
+  item_price: 1
+  cash_balance: 1
+  cashless_balance: 1
+  balance: 1
+  is_dispensed: false

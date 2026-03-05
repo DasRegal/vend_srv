@@ -1,5 +1,6 @@
 class Device < ApplicationRecord
   has_one :heartbeat, primary_key: :serial_number, foreign_key: :serial_number, dependent: :destroy
+  has_many :transactions, primary_key: :serial_number, foreign_key: :serial_number, dependent: :destroy
 
   validate :config_must_be_valid_json
 

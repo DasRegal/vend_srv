@@ -1,5 +1,5 @@
 class Api::V1::DevicesController < ApplicationController
-  before_action :set_device, only: %i[ show update destroy settings ]
+  before_action :set_device, only: %i[ show update destroy settings create_transaction ]
 
   # GET /devices
   def index
@@ -45,6 +45,21 @@ class Api::V1::DevicesController < ApplicationController
     render json: @device.merged_config
   end
 
+  def create_transaction
+    # Находим устройство по токену из заголовка (безопасность)
+    #@device = Device.find_by!(access_token: request.headers['X-Device-Token'])
+
+    # Создаем транзакцию, принудительно подставляя серийник устройства
+    @transaction = @device.transactions.new(transaction_params)
+    @transaction.serial_number = @device.serial_number
+
+    if @transaction.save
+      render json: { status: 'success', id: @transaction.id }, status: :created
+    else
+      render json: { status: 'error', errors: @transaction.errors }, status: :unprocessable_entity
+    end
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_device
@@ -60,6 +75,10 @@ class Api::V1::DevicesController < ApplicationController
         :board_name, :hw_rev, :fw_ver, :git_hash,
         :billbox_sn, :billbox_name, :coinbox_sn, :coinbox_name,
         :cashless_sn, :cashless_name
-  )
+      )
+    end
+
+    def transaction_params
+      params.require(:transaction).permit(:item, :item_price, :cash_balance, :cashless_balance, :balance, :is_dispensed)
     end
 end

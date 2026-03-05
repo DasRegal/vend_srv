@@ -178,6 +178,10 @@ RailsAdmin.config do |config|
           ".html_safe
         end
       end
+
+      field :transactions do
+        label "История транзакций"
+      end
     end
 
     list do
@@ -205,7 +209,59 @@ RailsAdmin.config do |config|
           bindings[:object].heartbeat&.last_seen_at&.strftime("%d.%m %H:%M") || "—"
         end
       end
+      field :transactions_link do
+        label "Транзакции"
+        pretty_value do
+          # Генерируем ссылку на список транзакций с фильтром по serial_number
+          #path = bindings[:view].index_path(model_name: 'transaction', f: { serial_number: { "1" => { v: bindings[:object].serial_number } } })
+          path = bindings[:view].index_path(model_name: 'transaction', f: { device: { "1" => { v: bindings[:object].serial_number } } })
 
+          # Рисуем кнопку-ссылку
+          bindings[:view].link_to(path, class: 'btn btn-info btn-xs') do
+            bindings[:view].content_tag(:i, '', class: 'fas fa-list') + " Посмотреть (#{bindings[:object].transactions.count})"
+          end.html_safe
+        end
+      end
+
+    end
+  end
+
+  config.model 'Transaction' do
+    navigation_label 'Оборудование' # Группируем вместе с Device в меню
+    parent Device                  # Сделает транзакции "дочерними" в хлебных крошках
+
+    list do
+      sort_by :created_at
+      field :created_at do
+        label "Время"
+        pretty_value do
+          value.strftime("%d.%m %H:%M") if value
+        end
+      end
+      #field :serial_number do
+      #  label "Серийный номер"
+      #  filterable true # Явно разрешаем фильтрацию
+      #end
+
+      # Чтобы поиск работал корректно через URL, добавим его и в секцию фильтров
+      filters [:is_dispensed, :device] 
+
+      field :device do
+        label "Устройство"
+        pretty_value { value.try(:serial_number) || bindings[:object].serial_number }
+      end
+      field :item do
+        label "Товар #"
+      end
+      field :item_price do
+        label "Цена"
+      end
+      field :balance do
+        label "Баланс"
+      end
+      field :is_dispensed do
+        label "Выдано?"
+      end
     end
   end
 

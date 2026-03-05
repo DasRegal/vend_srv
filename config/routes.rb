@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :transactions
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
 
   namespace :api do
@@ -6,6 +7,7 @@ Rails.application.routes.draw do
       resources :devices, param: :serial_number do
         member do
           get :settings
+          post :transaction, to: 'devices#create_transaction'
         end
       end
       resources :heartbeats
