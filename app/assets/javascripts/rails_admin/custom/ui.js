@@ -12,8 +12,8 @@ $(document).on('rails_admin.dom_ready', function() {
     target.parentNode.insertBefore(container, target);
 
     const options = {
-      mode: 'tree',
-      modes: ['tree', 'code', 'text'],
+      mode: 'form',
+      modes: ['tree', 'code', 'text', 'form', 'view', 'preview'],
       onChange: function() {
         try {
           target.value = JSON.stringify(editor.get());

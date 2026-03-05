@@ -100,7 +100,6 @@ RailsAdmin.config do |config|
         html_attributes do
           { 
             class: 'json-editor-target',
-            # style: 'width: 400px; height: 400px;'
           }
         end
         help "Визуальный редактор JSON"
