@@ -96,11 +96,14 @@ RailsAdmin.config do |config|
         field :status do read_only true end
       end
 
-      #field :config, :code_mirror do
-      #  config_option :mode, 'javascript'
-      #end
-      field :config, :jsonb do
-        help "Формат JSON. Например: { \"dispenser\": { \"default_price\": 150 } }"
+      field :config, :text do
+        html_attributes do
+          { 
+            class: 'json-editor-target',
+            # style: 'width: 400px; height: 400px;'
+          }
+        end
+        help "Визуальный редактор JSON"
       end
 
       group :system_info do
