@@ -180,7 +180,15 @@ RailsAdmin.config do |config|
         label "Транзакции"
         formatted_value do
           # Генерируем ссылку на список транзакций с фильтром по serial_number
-          path = bindings[:view].index_path(model_name: 'transaction', f: { device: { "1" => { v: bindings[:object].serial_number } } })
+          path = bindings[:view].index_path(
+            model_name: 'transaction',
+            params: {
+              f: {
+                device:     { "1" => { v: bindings[:object].serial_number } },
+                created_at: { "2" => { v: "" } }
+              }
+            }
+          )
 
           # Рисуем кнопку-ссылку
           bindings[:view].link_to(path, class: 'btn btn-info btn-xs') do
@@ -230,6 +238,7 @@ RailsAdmin.config do |config|
     end
 
     list do
+      items_per_page 50
       field :serial_number do
         label "Серийный номер"
       # Делаем значение ссылкой на страницу просмотра (show) этого объекта
@@ -275,6 +284,7 @@ RailsAdmin.config do |config|
     parent Device                  # Сделает транзакции "дочерними" в хлебных крошках
 
     list do
+      items_per_page 50
       sort_by :created_at
       field :created_at do
         label "Время"
