@@ -196,12 +196,18 @@ RailsAdmin.config do |config|
 
         if records.any?
           # Формируем HTML таблицу с помощью хелперов Rails
+          current_time = Time.now.strftime('%d.%m.%Y %H:%M:%S')
+
+          html = "<div style='margin-bottom: 10px; font-weight: bold; color: #666;'>"
+          html += "🕒 Текущее время сервера: #{current_time}"
+          html += "</div>"
+
           bindings[:view].render(
             partial: 'rails_admin/main/dashboard_history', # Или написать свой html:
             locals: { abstract_model: RailsAdmin::AbstractModel.new(Transaction), query: "", history: records }
           ) rescue (
             # Если лень возиться с партиалами, пишем простой HTML:
-            html = "<table class='table table-condensed table-striped'>"
+            html += "<table class='table table-condensed table-striped'>"
             html += "<thead><tr><th>Дата</th><th>Товар</th><th>Цена</th><th>Выдано</th></tr></thead><tbody>"
             records.each do |t|
               status = t.is_dispensed ? "✅" : "❌"
@@ -265,7 +271,7 @@ RailsAdmin.config do |config|
   end
 
   config.model 'Transaction' do
-    navigation_label 'Оборудование' # Группируем вместе с Device в меню
+    navigation_label 'Устройства' # Группируем вместе с Device в меню
     parent Device                  # Сделает транзакции "дочерними" в хлебных крошках
 
     list do
@@ -278,7 +284,7 @@ RailsAdmin.config do |config|
       end
 
       # Чтобы поиск работал корректно через URL, добавим его и в секцию фильтров
-      filters [:is_dispensed, :device] 
+      filters [:is_dispensed, :device, :created_at]
 
       field :device do
         label "Устройство"
