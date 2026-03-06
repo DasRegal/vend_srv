@@ -30,7 +30,7 @@ class Api::V1::DevicesController < ApplicationController
   # PATCH/PUT /devices/1
   def update
     if @device.update(device_params)
-      render json: @device
+      head :no_content
     else
       render json: @device.errors, status: :unprocessable_entity
     end
@@ -54,7 +54,7 @@ class Api::V1::DevicesController < ApplicationController
     @transaction.serial_number = @device.serial_number
 
     if @transaction.save
-      render json: { status: 'success', id: @transaction.id }, status: :created
+      head :no_content
     else
       render json: { status: 'error', errors: @transaction.errors }, status: :unprocessable_entity
     end
@@ -67,7 +67,7 @@ class Api::V1::DevicesController < ApplicationController
     rescue ActiveRecord::RecordNotFound
       render json: { error: "Device not found" }, status: :not_found
     end
-    
+
     # Only allow a list of trusted parameters through.
     def device_params
       params.fetch(:device, {}).permit(

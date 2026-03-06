@@ -4,7 +4,6 @@ class Device < ApplicationRecord
 
   validate :config_must_be_valid_json
 
-  # После создания устройства в базе, создаем для него Heartbeat
   after_create :create_associated_heartbeat
 
   def status_info

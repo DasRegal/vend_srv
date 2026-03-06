@@ -28,7 +28,7 @@ class Api::V1::HeartbeatsController < ApplicationController
   def update
     @heartbeat.touch(:last_seen_at)
     if @heartbeat.update(heartbeat_params)
-      head :ok
+      head :no_content
     else
       render json: @heartbeat.errors, status: :unprocessable_content
     end

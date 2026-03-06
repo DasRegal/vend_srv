@@ -51,14 +51,11 @@ RailsAdmin.config do |config|
       visible true
       controller do
         proc do
-          # Rails сама соберет путь /api/v1/название_модели/id
-          # format: :json добавит расширение в конец
           path = main_app.polymorphic_path([:api, :v1, @object], format: :json) rescue nil
-        
+
           if path
             redirect_to path
           else
-            # Если для модели нет API роута, просто открываем стандартный путь
             redirect_to main_app.url_for(@object)
           end
         end
@@ -98,7 +95,7 @@ RailsAdmin.config do |config|
 
       field :config, :text do
         html_attributes do
-          { 
+          {
             class: 'json-editor-target',
           }
         end
@@ -179,8 +176,50 @@ RailsAdmin.config do |config|
         end
       end
 
+      field :transactions_link do
+        label "Транзакции"
+        formatted_value do
+          # Генерируем ссылку на список транзакций с фильтром по serial_number
+          path = bindings[:view].index_path(model_name: 'transaction', f: { device: { "1" => { v: bindings[:object].serial_number } } })
+
+          # Рисуем кнопку-ссылку
+          bindings[:view].link_to(path, class: 'btn btn-info btn-xs') do
+            bindings[:view].content_tag(:i, '', class: 'fas fa-list') + " Посмотреть (#{bindings[:object].transactions.count})"
+          end.html_safe
+        end
+      end
       field :transactions do
-        label "История транзакций"
+        label "История последних 10 транзакций"
+        pretty_value do
+        # Берем последние 10 транзакций
+        records = value.limit(10).order(created_at: :desc)
+
+        if records.any?
+          # Формируем HTML таблицу с помощью хелперов Rails
+          bindings[:view].render(
+            partial: 'rails_admin/main/dashboard_history', # Или написать свой html:
+            locals: { abstract_model: RailsAdmin::AbstractModel.new(Transaction), query: "", history: records }
+          ) rescue (
+            # Если лень возиться с партиалами, пишем простой HTML:
+            html = "<table class='table table-condensed table-striped'>"
+            html += "<thead><tr><th>Дата</th><th>Товар</th><th>Цена</th><th>Выдано</th></tr></thead><tbody>"
+            records.each do |t|
+              status = t.is_dispensed ? "✅" : "❌"
+              html += "<tr>
+                <td>#{t.created_at.strftime('%d.%m %H:%M')}</td>
+                <td>#{t.item}</td>
+                <td>#{t.item_price}</td>
+                <td>#{status}</td>
+              </tr>"
+            end
+            html += "</tbody></table>"
+            bindings[:view].content_tag(:i, '', class: 'fas fa-list') + " Посмотреть (#{bindings[:object].transactions.count})"
+            html.html_safe
+          )
+            else
+              "Транзакций пока нет"
+          end
+        end
       end
     end
 
@@ -213,7 +252,6 @@ RailsAdmin.config do |config|
         label "Транзакции"
         pretty_value do
           # Генерируем ссылку на список транзакций с фильтром по serial_number
-          #path = bindings[:view].index_path(model_name: 'transaction', f: { serial_number: { "1" => { v: bindings[:object].serial_number } } })
           path = bindings[:view].index_path(model_name: 'transaction', f: { device: { "1" => { v: bindings[:object].serial_number } } })
 
           # Рисуем кнопку-ссылку
@@ -238,10 +276,6 @@ RailsAdmin.config do |config|
           value.strftime("%d.%m %H:%M") if value
         end
       end
-      #field :serial_number do
-      #  label "Серийный номер"
-      #  filterable true # Явно разрешаем фильтрацию
-      #end
 
       # Чтобы поиск работал корректно через URL, добавим его и в секцию фильтров
       filters [:is_dispensed, :device] 
@@ -275,9 +309,17 @@ RailsAdmin.config do |config|
           "32 символа. <a href='#' onclick='document.getElementById(\"global_config_token\").value = Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b => \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\"[b % 62]).join(\"\"); return false;'>Сгенерировать новый</a>".html_safe
         end
       end
-      field :config, :jsonb do
-        label "Глобальный конфиг диспенсеров"
-        help "Настройки по умолчанию для всех устройств"
+   #   field :config, :jsonb do
+   #     label "Глобальный конфиг диспенсеров"
+   #     help "Настройки по умолчанию для всех устройств"
+   #   end
+      field :config, :text do
+        html_attributes do
+          {
+            class: 'json-editor-target',
+          }
+        end
+        help "Визуальный редактор JSON"
       end
     end
 
@@ -317,5 +359,9 @@ RailsAdmin.config do |config|
         end
       end
     end
+  end
+
+  config.model 'Heartbeat' do
+    visible false
   end
 end

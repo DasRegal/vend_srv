@@ -18,7 +18,7 @@ class Api::V1::TransactionsController < ApplicationController
     @transaction = Transaction.new(transaction_params)
 
     if @transaction.save
-      render json: @transaction, status: :created, location: @transaction
+      head :no_content
     else
       render json: @transaction.errors, status: :unprocessable_content
     end
@@ -27,7 +27,7 @@ class Api::V1::TransactionsController < ApplicationController
   # PATCH/PUT /transactions/1
   def update
     if @transaction.update(transaction_params)
-      render json: @transaction
+      head :no_content
     else
       render json: @transaction.errors, status: :unprocessable_content
     end
