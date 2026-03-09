@@ -32,5 +32,6 @@ module App
     config.middleware.use ActionDispatch::Flash
     config.middleware.use Rack::MethodOverride
     config.middleware.use ActionDispatch::Session::CookieStore, key: '_interslice_session'
+#    config.i18n.default_locale = :ru
   end
 end

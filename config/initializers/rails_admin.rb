@@ -68,6 +68,8 @@ RailsAdmin.config do |config|
   end
 
   config.model 'Device' do
+    label "Устройства"
+    label_plural "Список устройств"
     edit do
       group :security do
         label "Безопасность и Доступ"
@@ -281,7 +283,31 @@ RailsAdmin.config do |config|
 
   config.model 'Transaction' do
     navigation_label 'Устройства' # Группируем вместе с Device в меню
+    label "Транзакции"
+    label_plural "Список транзакций"
     parent Device                  # Сделает транзакции "дочерними" в хлебных крошках
+
+    show do
+      field :default do
+        label "Общая информация"
+        formatted_value do
+          obj = bindings[:object]
+          status = obj.is_dispensed ? "✅" : "❌"
+          "
+          <table class='table table-sm table-bordered' style='max-width: 500px;'>
+            <tr><th class='bg-light' style='width: 40%'>Серийный номер</th><td>#{obj.serial_number}</td></tr>
+            <tr><th class='bg-light'>Товар</th><td>#{obj.item}</td></tr>
+            <tr><th class='bg-light'>Цена товара</th><td>#{obj.item_price}</td></tr>
+            <tr><th class='bg-light'>Наличные</th><td>#{obj.cash_balance}</td></tr>
+            <tr><th class='bg-light'>Безналичные</th><td>#{obj.cashless_balance}</td></tr>
+            <tr><th class='bg-light'>Баланс после продажи</th><td>#{obj.balance}</td></tr>
+            <tr><th class='bg-light'>Выдан</th><td>#{status}</td></tr>
+            <tr><th class='bg-light'>Время</th><td>#{obj.created_at.strftime('%d.%m %H:%M')}</td></tr>
+          </table>
+          ".html_safe
+        end
+      end
+    end
 
     list do
       items_per_page 50
@@ -317,6 +343,7 @@ RailsAdmin.config do |config|
 
   config.model 'GlobalConfig' do
     label "Глобальные настройки"
+    label_plural "Настройки"
     edit do
       field :token do
         label "Общий API Токен"

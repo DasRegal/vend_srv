@@ -1,5 +1,7 @@
 class ApplicationController < ActionController::Base
   skip_before_action :verify_authenticity_token
+  after_action :remove_extra_headers
+
 
   include ActionController::HttpAuthentication::Basic::ControllerMethods
   include ActionController::MimeResponds
@@ -27,4 +29,8 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def remove_extra_headers
+    response.headers.delete('Vary')
+  end
 end
