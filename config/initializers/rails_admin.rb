@@ -133,12 +133,15 @@ RailsAdmin.config do |config|
           info = obj.status_info
           bootstrap_class = info[:class].gsub('label-', 'bg-')
           status = bindings[:view].content_tag(:span, info[:text], class: "badge #{bootstrap_class}").html_safe
+          last_signal = obj.heartbeat&.last_seen_at&.strftime("%d.%m %H:%M") || "—"
           "
           <table class='table table-sm table-bordered' style='max-width: 500px;'>
             <tr><th class='bg-light' style='width: 40%'>Серийный номер</th><td>#{obj.serial_number}</td></tr>
             <tr><th class='bg-light'>Адрес</th><td>#{obj.address}</td></tr>
             <tr><th class='bg-light'>Описание</th><td>#{obj.description}</td></tr>
+            <tr><th class='bg-light'>GSM сигнал</th><td>#{obj.signal_bar_html}</td></tr>
             <tr><th class='bg-light'>Состояние</th><td>#{status}</td></tr>
+            <tr><th class='bg-light'>Последний сигнал</th><td>#{last_signal}</td></tr>
           </table>
           ".html_safe
         end
@@ -218,13 +221,16 @@ RailsAdmin.config do |config|
           ) rescue (
             # Если лень возиться с партиалами, пишем простой HTML:
             html += "<table class='table table-condensed table-striped'>"
-            html += "<thead><tr><th>Дата</th><th>Товар</th><th>Цена</th><th>Выдано</th></tr></thead><tbody>"
+            html += "<thead><tr><th>Дата</th><th>Товар</th><th>Цена</th><th>Наличные</th><th>Безналичные</th><th>Остаток</th><th>Выдан</th></tr></thead><tbody>"
             records.each do |t|
               status = t.is_dispensed ? "✅" : "❌"
               html += "<tr>
                 <td>#{t.created_at.strftime('%d.%m %H:%M')}</td>
                 <td>#{t.item}</td>
                 <td>#{t.item_price}</td>
+                <td>#{t.cash_balance}</td>
+                <td>#{t.cashless_balance}</td>
+                <td>#{t.balance}</td>
                 <td>#{status}</td>
               </tr>"
             end
@@ -249,14 +255,22 @@ RailsAdmin.config do |config|
         bindings[:view].link_to(value, path)
       end
       end
-      field :address
+      field :address do
+        label "Адрес"
+      end
       # Кастомное поле для статуса
       field :status_display do
-        label "Состояние связи"
+        label "Состояние"
         pretty_value do
           info = bindings[:object].status_info
           bootstrap_class = info[:class].gsub('label-', 'bg-')
           bindings[:view].content_tag(:span, info[:text], class: "badge #{bootstrap_class}")
+        end
+      end
+      field :signal_bar_html do
+        label "GSM сигнал"
+        pretty_value do
+          value
         end
       end
       field :heartbeat_time do

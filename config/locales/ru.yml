@@ -1,0 +1,48 @@
+ru:
+  admin:
+    actions:
+      dashboard:
+        breadcrumb: "Главная"
+        menu: "Dashboard"
+      index:
+        title: "Список %{model_label}"
+        menu: "Список"
+        breadcrumb: "%{model_label}"
+      new:
+        title: "Создать %{model_label}"
+        menu: "Добавить"
+        breadcrumb: "%{model_label}"
+      edit:
+        title: "Правка %{model_label}"
+        menu: "%{model_label}"
+        breadcrumb: "%{model_label}"
+      show:
+        title: "Просмотр %{model_label}"
+        menu: "Просмотр"
+        breadcrumb: "%{model_label}"
+      export:
+        menu: "Экспорт"
+        breadcrumb: "Экспорт"
+
+  activerecord:
+    models:
+      device:
+        one: "Устройство"
+        other: "Устройства"
+      transaction:
+        one: "Транзакция"
+        other: "Транзакции"
+      global_config:
+        one: "Глобальная настройка"
+        other: "Глобальные настройки"
+
+    # 3. Перевод названий колонок (чтобы в таблице было "Время", а не "Created at")
+    attributes:
+      device:
+        serial_number: "Серийный номер"
+        address: "Адрес"
+      transaction:
+        created_at: "Время"
+        item: "Товар"
+        item_price: "Цена"
+        is_dispensed: "Выдано"

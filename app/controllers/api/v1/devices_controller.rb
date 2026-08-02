@@ -60,6 +60,13 @@ class Api::V1::DevicesController < ApplicationController
     end
   end
 
+  def signal_status
+    return "Нет сигнала" if gsm_signal.nil? || gsm_signal == 99
+    return "Отличный" if gsm_signal > 25
+    return "Хороший" if gsm_signal > 15
+    "Слабый"
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_device
@@ -79,6 +86,7 @@ class Api::V1::DevicesController < ApplicationController
     end
 
     def transaction_params
-      params.require(:transaction).permit(:item, :item_price, :cash_balance, :cashless_balance, :balance, :is_dispensed)
+      params.require(:transaction).permit(:item, :item_price, :cash_balance, :cashless_balance, :balance, :is_dispensed,
+                                         :cashless_sn, :cashless_name)
     end
 end

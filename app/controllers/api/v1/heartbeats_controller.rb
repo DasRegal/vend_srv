@@ -47,6 +47,6 @@ class Api::V1::HeartbeatsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def heartbeat_params
-      params.fetch(:heartbeat).permit(:serial_number, :last_seen_at)
+      params.fetch(:heartbeat).permit(:serial_number, :last_seen_at, :gsm_signal)
     end
 end

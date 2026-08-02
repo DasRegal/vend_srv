@@ -6,6 +6,36 @@ class Device < ApplicationRecord
 
   after_create :create_associated_heartbeat
 
+  def gsm_signal
+    heartbeat&.gsm_signal
+  end
+
+  def signal_status
+    heartbeat&.signal_status
+  end
+
+  def signal_bar_html
+    val = heartbeat&.gsm_signal
+    return '<span style="color: grey;">⚪ Нет данных</span>'.html_safe if val.nil? || val == 99
+
+    color = case val
+            when 20..31 then '#28a745' # Зеленый (Excellent)
+            when 15..19 then '#ffc107' # Желтый (Good)
+            when 10..14 then '#fd7e14' # Оранжевый (Fair)
+            else '#dc3545'             # Красный (Weak)
+            end
+
+    # Рисуем "палочки" через спецсимволы или просто текст с цветом
+    bars = case val
+           when 20..31 then 'Full 📶'
+           when 15..19 then 'Medium 📶'
+           when 10..14 then 'Low 📶'
+           else 'Critical ⚠️'
+           end
+
+    "<strong style='color: #{color};'>#{val} RSSI</strong> <small>#{bars}</small>".html_safe
+  end
+
   def status_info
     hb = heartbeat
 
